@@ -34,7 +34,12 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
 
     # handle images
-     'easy_thumbnails',
+    'easy_thumbnails',
+    
+    #django file form
+    'django_file_form',
+    'django_file_form.ajaxuploader',
+
 ]
 
 SITE_ID = 1
@@ -118,7 +123,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+# allauth configuration
 
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
@@ -128,7 +138,6 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
-# allauth configuration
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_REQUIRED = True
@@ -143,3 +152,18 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = DEFAULT_FROM_EMAIL = 'simpleblog.noreply@gmail.com'
 EMAIL_HOST_PASSWORD = 'nosorog999'
 ACCOUNT_EMAIL_SUBJECT_PREFIX = 'Simple Blog. '
+
+LOGIN_REDIRECT_URL = '/'
+
+# thumbnails configuration
+
+THUMBNAIL_DEFAULT = STATIC_URL + 'blog/img/' + 'noimage.png'
+THUMBNAIL_ALIASES = {
+    '': {
+        'avatar': {'size': (100, 100), 'crop': True},
+        'thumb': {'size': (200, 200), 'crop': True},
+        'small': {'size': (250, 250), 'crop': True},
+        'medium': {'size': (800, 600), 'crop': False},
+        'large': {'size': (1200, 900), 'crop': False}
+    },
+}
