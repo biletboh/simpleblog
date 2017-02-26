@@ -38,6 +38,9 @@
 <!-- File Uploader Css -->
 <link rel="stylesheet" href="{% static 'ajaxuploader/css/fileuploader.css' %}">
 
+<!-- Ellipsis -->
+<script src="{% static 'blog/js/jquery.dotdotdot.js' %}"></script>
+
 <!-- Form Media -->
 {{ form.media }}
 
@@ -60,6 +63,7 @@
     <div id="navbar" class="collapse navbar-collapse">
       <ul class="nav navbar-nav">
         {% if user.is_authenticated %}
+        <li><a href="{% url 'blog:blog' %}">Blog</a></li>
         <li><a href="{% url 'blog:profile' user.pk %}">{{ user.email }}</a></li>
         <li><a href="{% url 'account_logout' %}">Logout</a></li>
         {% else %}

@@ -45,6 +45,12 @@ INSTALLED_APPS = [
 
     # datetime widget
     'datetimewidget',
+
+    # tinyMCE full text editor
+    'tinymce',
+
+    # ajax pagination
+    'el_pagination',
 ]
 
 SITE_ID = 1
@@ -168,7 +174,26 @@ THUMBNAIL_ALIASES = {
         'avatar': {'size': (100, 100), 'crop': True},
         'thumb': {'size': (200, 200), 'crop': True},
         'small': {'size': (250, 250), 'crop': True},
-        'medium': {'size': (800, 600), 'crop': False},
-        'large': {'size': (1200, 900), 'crop': False}
+        'medium': {'size': (750, 400), 'crop': True},
+        'large': {'size': (800, 550), 'crop': True},
+        'extra_large': {'size': (1200, 600), 'crop': True},
     },
 }
+
+#TinyMCE config
+TINYMCE_JS_URL = '/static/tiny_mce/tiny_mce.js'
+TINYMCE_JS_ROOT = '/static/tiny_mce'
+
+TINYMCE_DEFAULT_CONFIG = {
+        'plugins': 'advlist,autolink,autoresize,emotions,fullpage,fullscreen,media,table,paste,searchreplace,wordcount',
+        'theme': "advanced",
+        'theme_advanced_resizing': True,
+        'theme_advanced_resize_horizontal': True,
+        'theme_advanced_buttons1': 'undo,redo,fontselect,fontsizeselect,bold,italic,underline,strikethrough,|,forecolor,backcolor,|,bullist,numlist,|,justifyleft,justifycenter,justifyright,justifyfull,|,outdent,indent,|,link,unlink,|,emotions,blockquote,|,table,hr,sub,sup,charmap',
+        'theme_advanced_buttons2' : "",
+        'width': '100%',
+        'cleanup_on_startup': True,
+        'custom_undo_redo_levels': 10,
+        }
+TINYMCE_COMPRESSOR = False 
+TINYMCE_FILEBROWSER = False 

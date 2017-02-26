@@ -1,0 +1,40 @@
+{% extends "blog/base.html" %}
+
+{% block content %}
+{% load static %}
+{% load tz %}
+{% load thumbnail %}
+
+
+
+<div class="container">
+
+  <div class="row">
+    <div class="box">
+      <div class="col-lg-12">
+        <hr>
+        <h2 class="intro-text text-center">
+          <strong>Blog</strong>        
+        </h2>
+        <hr>
+      </div>
+      <div class="endless_page_template">
+
+        {% include "blog/post_list.html" %}
+
+        {% block js %}
+        {{ block.super }}
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+
+        <script src="{% static 'el-pagination/js/el-pagination.js' %}"></script>
+        <script>$.endlessPaginate({paginateOnScroll: true});</script>
+        <script>$(document).ajaxComplete(function(){$.getScript("{% static 'blog/js/jquery.dotdotdot.js' %}", function() {$(".dot-post").dotdotdot({ellipsis  : '... ',});});});</script>
+        {% endblock %}
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

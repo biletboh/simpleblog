@@ -1,0 +1,81 @@
+{% extends "blog/base.html" %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+{% load static %}
+{% load widget_tweaks %}
+{% load tz %}
+<div class="wrapper">
+  <div class="container box">
+    <h3>{{title}}</h3>
+    {% if messages %}
+    <div class="message-top">
+      <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+        {{ message }}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {% timezone "Europe/Kiev" %}
+    <form action="" name="create-form" id="create-form" enctype="multipart/form-data" method="post">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-md-12">
+          {% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}
+          {% for fieldset in form.fieldsets %}
+          <fieldset class="form-group {{ fieldset.classes }}">
+            {% if fieldset.description %}
+            <p class="description">{{ fieldset.description }}</p>
+            {% endif %}
+            {% for field in fieldset %}
+            {% if field.is_hidden %}
+            {% render_field field class="form-field" %}
+            {% else %}
+            <div class="row">
+              <div class="col-md-2">
+                {{ field.label_tag }}
+              </div>
+              <div class="col-md-10">
+                {% if fieldset.name == "main" %}
+                {{ field|attr:"class:form-control" }}
+                {% elif fieldset.name == "text-area" %}
+                {{ field|attr:"class:form-control" }}
+                {% else %}
+                {{ field }}
+                {% endif %}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-10 col-md-offset-2">
+                {{ field.errors }}
+              </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+          </fieldset>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <input class="btn btn-default" type="submit" value="Submit"/>
+        </div>
+      </div>
+    </form>
+    {% endtimezone %}
+  </div>
+</div>
+{% include 'upload_template.html' %}
+<script type="text/javascript">
+$(function() {
+    initUploadFields($('#create-form'));
+    });
+</script>
+
+{% endblock %}

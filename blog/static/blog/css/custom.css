@@ -26,3 +26,9 @@ hr {
 .form-group-item {
   margin: 5px 0;
 }
+.blog-image {
+  margin: auto;
+}
+.post {
+  margin: 30px;
+}
