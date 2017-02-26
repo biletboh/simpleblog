@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.core.urlresolvers import reverse
 
 from django.views.generic import View, DetailView, DeleteView, TemplateView, FormView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -55,13 +56,13 @@ class UserUpdateFormView(LoginRequiredMixin, SingleObjectMixin, FormView):
         
         country = form.cleaned_data['country']
         city = form.cleaned_data['city']
-        #birthday = form.cleaned_data['birthday']
+        birthday = form.cleaned_data['birthday']
         avatar = form.cleaned_data['avatar']
         if avatar: 
             user.user_profile.avatar = avatar
         userprofile.country = country
         userprofile.city = city 
-        #userprofile.birthday = birthday 
+        userprofile.birthday = birthday 
 
         user.save()
         return super(UserUpdateFormView, self).form_valid(form)

@@ -36,10 +36,15 @@ INSTALLED_APPS = [
     # handle images
     'easy_thumbnails',
     
-    #django file form
+    # django file form
     'django_file_form',
     'django_file_form.ajaxuploader',
+    
+    # template widgets
+    'widget_tweaks',
 
+    # datetime widget
+    'datetimewidget',
 ]
 
 SITE_ID = 1

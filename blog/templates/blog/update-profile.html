@@ -1,0 +1,61 @@
+{% extends "blog/base.html" %}
+{% block content %}
+{% load widget_tweaks %}
+{% load object_attributes %}
+
+<div class="wrapper">
+  <div class="container box">
+    <div class="row text-center custom-page-header">
+      <div class="col-md-12">
+        <h3 class="site-name">Update Profile Information</h3>
+      </div>
+    </div>
+    <hr>
+
+    <form id="user-update-form" action="" method="post">
+      {% csrf_token %}
+      {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+
+      <div class="form-group-custom margin-top">
+        {% for fset in form.fieldsets %}
+        {% for field in fset %}
+        <div class="form-group-item">
+          {% if not field.is_hidden %}
+          {{field.label_tag}}                    
+          {% endif %}
+          {% if fset.legend == "user_profile" %}
+          {% with user.user_profile|object_attributes:field as val %}
+          {% render_field field class+="form-control form-custom" value=val %}
+          {% endwith %}
+          {% else %}
+          {% with user|object_attributes:field as val %}
+          {% render_field field class+="form-control form-custom" value=val %}
+          {% endwith %}
+          {% endif %}
+          {{ field.errors }}
+        </div>
+        {% endfor %}
+        {% endfor %}
+      </div>
+      <div class="text-center">
+        <input type="submit" class="btn btn-primary" value="Update" />
+        <a href = "{% url 'blog:welcome'%}" class="btn btn-primary">Cancel</a>
+      </div>
+      </div>
+    </form>
+  </div>
+</div>
+<script type="text/javascript">
+$(function() {
+    initUploadFields($('#user-update-form'));
+    });
+</script>
+
+{% include 'upload_template.html' %}
+{% endblock %}
