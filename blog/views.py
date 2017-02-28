@@ -3,15 +3,15 @@ from django.http import HttpResponse
 from django.core.urlresolvers import reverse
 from django.utils import timezone
 
-from django.views.generic import View, DetailView, DeleteView, TemplateView, FormView, ListView
+from django.views.generic import View, DetailView, CreateView, DeleteView, TemplateView, FormView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import FormMixin
 from django.views.generic.detail import SingleObjectMixin
 from django.contrib.messages.views import SuccessMessageMixin
 
-from blog.models import UserProfile, Post, Comment
+from blog.models import UserProfile, Post, Comment, Like
 from django.contrib.auth.models import User
-from blog.forms import UserUpdateForm, PostForm, CommentForm
+from blog.forms import UserUpdateForm, PostForm, CommentForm, LikeForm
 
 from el_pagination.views import AjaxListView
 
@@ -190,6 +190,7 @@ class PostAndCommentList(LoginRequiredMixin, AjaxListView):
         context = super(PostAndCommentList, self).get_context_data(**kwargs)
         context['post'] = Post.objects.get(pk= self.kwargs['pk'])
         context['form'] = CommentForm()
+        context['like_form'] = LikeForm()
         return context
 
     def get_queryset(self, **kwargs):
@@ -210,6 +211,7 @@ class CreateComment(SuccessMessageMixin, LoginRequiredMixin, SingleObjectMixin, 
         return super(CreateComment, self).post(request, *args, **kwargs) 
 
     def form_valid(self, form):
+        
         user = self.request.user
         article = self.object
         comment = article.comment_set.create(user=user, body=form.cleaned_data['body'])
@@ -227,14 +229,65 @@ class PostPage(View):
         return view(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        view = CreateComment.as_view()
+        if 'comment' in request.POST:
+            view = CreateComment.as_view()
+        elif 'like' in request.POST:
+            view = Like.as_view()
+        elif 'delete-like' in request.POST:
+            view = DeleteLike.as_view()
         return view(request, *args, **kwargs)
 
 # Delete Comment 
-class DeleteComment(LoginRequiredMixin, DeleteView):
-    model = Comment 
-    template_name = 'blog/delete-post.html'
+
+# Like Button
+class Like(SuccessMessageMixin, LoginRequiredMixin, SingleObjectMixin, FormView):
+    form_class = LikeForm 
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object(queryset=Post.objects.all())
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+        return super(Like, self).post(request, *args, **kwargs) 
+
+    def form_valid(self, form):
+        user = self.request.user
+        article = self.object
+        try:
+            article.like_set.get(user=user)
+        except:
+            like = article.like_set.create(user=user)
+            like.save()
+        return super(Like, self).form_valid(form)
 
     def get_success_url(self):
-        return reverse('blog:post-page', kwargs={'pk': self.request.post.pk})
+        return reverse('blog:post-page', kwargs={'pk': self.object.pk})
+
+# Delete Like 
+class DeleteLike(SuccessMessageMixin, LoginRequiredMixin, SingleObjectMixin, FormView):
+    form_class = LikeForm 
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object(queryset=Post.objects.all())
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+        return super(DeleteLike, self).post(request, *args, **kwargs) 
+
+    def form_valid(self, form):
+        user = self.request.user
+        article = self.object
+        try:
+            article.like_set.get(user=user)
+            article.like_set.get(user=user).delete()
+        except:
+            pass
+
+        return super(DeleteLike, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('blog:post-page', kwargs={'pk': self.object.pk})
+
 

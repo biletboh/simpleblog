@@ -12,8 +12,15 @@
         <strong>{{ post.name }}</strong>
       </h2>
       {% if user == post.user %}
-      <a href="{% url 'blog:delete-post' post.pk %}">Delete</a>
-      <a href="{% url 'blog:edit-post' post.pk %}">Edit</a>
+      <ul class="list-inline">
+        <li>
+        <form action="{% url 'blog:delete-post' post.pk %}"  method="post">{% csrf_token %}
+          <input type="submit" class="btn btn-primary" value="Delete" />
+        </form>
+        </li>
+        <li>
+        <a href="{% url 'blog:edit-post' post.pk %}" class="btn btn-primary">Edit</a>
+        </li>
       {% endif %}
       <hr>
     </div>
@@ -24,6 +31,22 @@
       <div class="post"> 
         {{ post.body|safe }} 
       </div>
+    </div>
+    <div class="col-md-12">
+
+     <ul class="list-inline">
+       <li><form action="" method="post" name="like-form" id="like-form">{% csrf_token %}
+         <button type="submit" name='like' class="btn btn-primary" value="Like" />          <i class="fa fa-thumbs-o-up" aria-hidden="true"></i> 
+         </button>
+       </form></li>
+       <li><form action="" method="post" name="delete-like-form" id="delete-like-form">{% csrf_token %}
+         <button type="submit" name='delete-like' class="btn btn-primary" value="Like" />          <i class="fa fa-thumbs-o-down" aria-hidden="true"></i> 
+         </button>
+       </form></li>
+
+
+       <li>{{post.like_set.all.count}}</li>
+     </ul>
     </div>
     <hr>
   </div>

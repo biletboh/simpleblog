@@ -11,7 +11,8 @@
   <h2 class="text-center">{{ post.name }}</h2>
   <ul class="list-inline text-right">
     <li><p>{{ post.pub_date }} by {{post.user.email}}</p></li>
-    <li><i class="fa fa-thumbs-o-up" aria-hidden="true"></i> {{post.like_set.all.count}}</li>
+    <li>
+    <i class="fa fa-thumbs-o-up" aria-hidden="true"></i> {{post.like_set.all.count}}</li>
     </ul>
   <div class="dot-post dot-ellipsis dot-height-90 text-left">{{ post.body|safe }}</div>
   <div class="text-center">

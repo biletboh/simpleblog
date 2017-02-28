@@ -2,10 +2,12 @@ from django import forms
 from form_utils import forms as betterforms
 
 from django.db import models
-from .models import UserProfile
+from .models import UserProfile, Like
 
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+
+from django.forms import ModelForm
 
 from django_file_form.forms import FileFormMixin, UploadedFileField, MultipleUploadedFileField
 
@@ -55,3 +57,11 @@ class CommentForm(FileFormMixin, betterforms.BetterForm):
     body = forms.CharField(label="body", widget=TinyMCE(attrs={'cols': 80, 'rows': 10}), required=False)
     class Meta:
         fieldsets = [('comment', {'fields': ['body'], 'legend': 'text-area'}),]
+
+class LikeForm(betterforms.BetterForm):
+    form_id = forms.CharField(widget = forms.HiddenInput(), required = False)
+    class Meta:
+        fieldsets = [
+                ('likes', {'fields': ['form_id', ], 'legend': 'likes'}),
+                ]
+
