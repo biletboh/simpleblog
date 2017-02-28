@@ -15,10 +15,10 @@ urlpatterns = [
 
         # post management 
         url(r'post/add/$', views.CreatePost.as_view(), name = 'create-post'),
+        url(r'^blog/post/delete/(?P<pk>\d+)/$', views.DeletePost.as_view(), name='delete-post'),
+        url(r'^blog/post/edit/(?P<pk>\d+)/$', views.EditPost.as_view(), name='edit-post'),
 
         # blog
         url(r'blog/$', views.Blog.as_view(), name = 'blog'),
         url(r'blog/post/(?P<pk>[0-9]+)/$', views.PostPage.as_view(), name = 'post-page'),
-        url(r'^blog/post/edit/(?P<pk>\d+)/$', views.EditPost.as_view(), name='edit-post'),
-        url(r'^blog/post/delete/(?P<pk>\d+)/$', views.DeletePost.as_view(), name='delete-post'),
 ]
