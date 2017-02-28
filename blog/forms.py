@@ -36,8 +36,8 @@ class UserUpdateForm(FileFormMixin, betterforms.BetterForm):
 
 class PostForm(FileFormMixin, betterforms.BetterForm):
     name = forms.CharField(label="name", max_length=200)
-    pub_date = forms.DateTimeField(label="publication date", widget=DateTimeWidget(usel10n=True, bootstrap_version=3), initial=timezone.now)
     body = forms.CharField(label="body", widget=TinyMCE(attrs={'cols': 80, 'rows': 30}), required=False)
+    pub_date = forms.DateTimeField(label="publication date", widget=DateTimeWidget(usel10n=True, bootstrap_version=3), initial=timezone.now)
     image = UploadedFileField(label="image", required = False)
     form_id = forms.CharField(widget = forms.HiddenInput(), required = False)
     upload_url = forms.CharField(widget = forms.HiddenInput(), required = False)
@@ -45,8 +45,13 @@ class PostForm(FileFormMixin, betterforms.BetterForm):
     object_id = forms.CharField(widget = forms.HiddenInput(), required = False)
 
     class Meta:
-        fieldsets = [('main', {'fields': ['name', 'language', 'pub_date'], 'legend': 'main', }),
-
+        fieldsets = [
+                ('main', {'fields': ['name', 'language', 'pub_date'], 
+                    'legend': 'main', }),
                 ('text-area', {'fields': ['body'], 'legend': 'text-area'}),
                 ('images', {'fields': ['image'] + ['form_id', 'upload_url', 'delete_url'], 'legend': 'images'}),
                      ]
+class CommentForm(FileFormMixin, betterforms.BetterForm):
+    body = forms.CharField(label="body", widget=TinyMCE(attrs={'cols': 80, 'rows': 10}), required=False)
+    class Meta:
+        fieldsets = [('comment', {'fields': ['body'], 'legend': 'text-area'}),]

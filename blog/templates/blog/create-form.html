@@ -1,0 +1,56 @@
+{% load static %}
+{% load widget_tweaks %}
+{% load tz %}
+
+{% timezone "Europe/Kiev" %}
+<form action="" name="create-form" id="create-form" enctype="multipart/form-data" method="post">
+  {% csrf_token %}
+  <div class="row">
+    <div class="col-md-12">
+      {% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}
+      {% for fieldset in form.fieldsets %}
+      <fieldset class="form-group {{ fieldset.classes }}">
+        {% if fieldset.description %}
+        <p class="description">{{ fieldset.description }}</p>
+        {% endif %}
+        {% for field in fieldset %}
+        {% if field.is_hidden %}
+        {% render_field field class="form-field" %}
+        {% else %}
+        <div class="row">
+          {% if not fieldset.name == "comment" %}
+          <div class="col-md-2">
+          {{ field.label_tag }}
+          </div>
+          <div class="col-md-10">
+          {% else %}
+          <div class="col-md-12">
+          {% endif %}
+            {% if fieldset.name == "main" %}
+            {{ field|attr:"class:form-control" }}
+            {% elif fieldset.name == "text-area" %}
+            {{ field|attr:"class:form-control" }}
+            {% else %}
+            {{ field }}
+            {% endif %}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-10 col-md-offset-2">
+            {{ field.errors }}
+          </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </fieldset>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <input class="btn btn-default" type="submit" value="Submit"/>
+    </div>
+  </div>
+</form>
+{% endtimezone %}
+

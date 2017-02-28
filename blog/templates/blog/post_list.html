@@ -6,14 +6,17 @@
 
 {% for post in posts%}
 
-<div class="col-lg-12 text-center blog-post">
+<div class="col-lg-12 blog-post">
   <img class="img-responsive blog-image" src="{{ post.image.large.url }}" alt="{{ post.image.name }}">
-  <h2>{{ post.name }}
-    <br>
-    <small>{{ post.pub_date }}</small>
-  </h2>
+  <h2 class="text-center">{{ post.name }}</h2>
+  <ul class="list-inline text-right">
+    <li><p>{{ post.pub_date }} by {{post.user.email}}</p></li>
+    <li><i class="fa fa-thumbs-o-up" aria-hidden="true"></i> {{post.like_set.all.count}}</li>
+    </ul>
   <div class="dot-post dot-ellipsis dot-height-90 text-left">{{ post.body|safe }}</div>
+  <div class="text-center">
   <a href="{% url 'blog:post-page' post.pk %}" class="btn btn-default btn-lg btn-responsive">Read More</a>
+</div>
   <hr>
 </div>
 {% endfor %}

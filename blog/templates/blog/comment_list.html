@@ -1,0 +1,19 @@
+{% load el_pagination_tags %}
+{% load static %}
+{% load thumbnail %}
+
+{% paginate comments %}
+
+{% for comment in comments %}
+<div class="col-lg-12 blog-post">
+  <ul class="list-inline text-right">
+    <li><p>{{ comment.pub_date }}</p></li>
+    <li><p>by {{ comment.user.email }} </p></li>
+  </ul>
+  <div class="text-left">{{ comment.body|safe }}</div>
+</div>
+<hr>
+{% endfor %}
+
+{% show_more%}
+

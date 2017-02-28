@@ -32,15 +32,30 @@ class UserProfile(models.Model):
 
 
 # Post Model
-
-class Post(models.Model):
-    name = models.CharField(max_length=200)
+class BasePost(models.Model):
     body = HTMLField() 
     pub_date = models.DateTimeField(default=timezone.datetime.now)
-    image = ThumbnailerImageField(upload_to='photos/blog', blank=True) 
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
     
     class Meta:
         ordering = ('-pub_date',)
+# Post 
+class Post(BasePost):
+    name = models.CharField(max_length=200)
+    image = ThumbnailerImageField(upload_to='photos/blog', blank=True) 
+    
+    def __str__(self):
+        return self.name
+
+# Comment
+class Comment(BasePost):
+    article = models.ForeignKey(Post, on_delete = models.CASCADE)
+
+# Like Button
+class Like(models.Model):
+    user = models.ForeignKey(User)
+    article = models.ForeignKey(Post, on_delete = models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):

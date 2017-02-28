@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.urlresolvers import reverse
+from django.utils import timezone
 
 from django.views.generic import View, DetailView, DeleteView, TemplateView, FormView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -8,9 +9,9 @@ from django.views.generic.edit import FormMixin
 from django.views.generic.detail import SingleObjectMixin
 from django.contrib.messages.views import SuccessMessageMixin
 
-from blog.models import UserProfile, Post
+from blog.models import UserProfile, Post, Comment
 from django.contrib.auth.models import User
-from blog.forms import UserUpdateForm, PostForm
+from blog.forms import UserUpdateForm, PostForm, CommentForm
 
 from el_pagination.views import AjaxListView
 
@@ -96,22 +97,15 @@ class UserDelete(LoginRequiredMixin, DeleteView):
 # Blog CRUD
 
 # List of posts
-class Blog(AjaxListView):
+class Blog(LoginRequiredMixin, AjaxListView):
     context_object_name = "posts"
     template_name = 'blog/blog.html'
     page_template = 'blog/post_list.html'
     
     def get_queryset(self):
         return Post.objects.all()
-# Post page
-class PostPage(DetailView):
-    model = Post 
-    template_name = 'blog/post.html'
-    def get_context_data(self, **kwargs):
-        context = super(PostPage, self).get_context_data(**kwargs)
-        return context
 
-#Create Post Page
+#Create Post 
 class CreatePost(SuccessMessageMixin, LoginRequiredMixin, FormView):
     form_class = PostForm 
     template_name = 'blog/create.html'
@@ -119,7 +113,8 @@ class CreatePost(SuccessMessageMixin, LoginRequiredMixin, FormView):
     login_url = '/accounts/login'
     success_message = "A post was created successfully"
     def form_valid(self, form):
-        post = Post(name=form.cleaned_data['name'], pub_date=form.cleaned_data['pub_date'], body=form.cleaned_data['body'], image=form.cleaned_data['image'])
+        user = self.request.user
+        post = Post(user=user, name=form.cleaned_data['name'], pub_date=form.cleaned_data['pub_date'], body=form.cleaned_data['body'], image=form.cleaned_data['image'])
         post.save()
         form.delete_temporary_files()
         return super(CreatePost, self).form_valid(form)
@@ -129,13 +124,13 @@ class CreatePost(SuccessMessageMixin, LoginRequiredMixin, FormView):
         context['title'] = 'Create Posts'
         return context   
 
-#Delete News page
+#Delete Post 
 class DeletePost(LoginRequiredMixin, DeleteView):
     model = Post 
     template_name = 'blog/delete-post.html'
     success_url = '/blog' 
 
-#Edit News Page
+#Edit Post 
 class DisplayPost(LoginRequiredMixin, DetailView):
     template_name = 'blog/edit.html'
     login_url = '/accounts/login'
@@ -181,3 +176,65 @@ class EditPost(View):
     def post(self, request, *args, **kwargs):
         view = UpdatePost.as_view()
         return view(request, *args, **kwargs)
+
+
+# Render Posts and create comments
+
+# Post page that displays post and comments. 
+class PostAndCommentList(LoginRequiredMixin, AjaxListView):
+    context_object_name = "comments"
+    template_name = 'blog/post.html'
+    page_template = 'blog/comment_list.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super(PostAndCommentList, self).get_context_data(**kwargs)
+        context['post'] = Post.objects.get(pk= self.kwargs['pk'])
+        context['form'] = CommentForm()
+        return context
+
+    def get_queryset(self, **kwargs):
+        post = Post.objects.get(pk= self.kwargs['pk'])
+        return Comment.objects.filter(article = post) 
+        return Comment.objects.all() 
+    
+# Create Comment
+class CreateComment(SuccessMessageMixin, LoginRequiredMixin, SingleObjectMixin, FormView):
+    form_class = CommentForm 
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object(queryset=Post.objects.all())
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+        return super(CreateComment, self).post(request, *args, **kwargs) 
+
+    def form_valid(self, form):
+        user = self.request.user
+        article = self.object
+        comment = article.comment_set.create(user=user, body=form.cleaned_data['body'])
+        comment.save()
+        return super(CreateComment, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('blog:post-page', kwargs={'pk': self.object.pk})
+
+
+# Combine post, list, and create comment 
+class PostPage(View):
+    def get(self, request, *args, **kwargs):
+        view = PostAndCommentList.as_view()
+        return view(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        view = CreateComment.as_view()
+        return view(request, *args, **kwargs)
+
+# Delete Comment 
+class DeleteComment(LoginRequiredMixin, DeleteView):
+    model = Comment 
+    template_name = 'blog/delete-post.html'
+
+    def get_success_url(self):
+        return reverse('blog:post-page', kwargs={'pk': self.request.post.pk})
+
