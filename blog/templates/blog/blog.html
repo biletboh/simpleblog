@@ -26,7 +26,6 @@
 
         <script src="{% static 'el-pagination/js/el-pagination.js' %}"></script>
         <script>$.endlessPaginate({paginateOnScroll: true});</script>
-        <script>$(document).ajaxComplete(function(){$.getScript("{% static 'blog/js/jquery.dotdotdot.js' %}", function() {$(".dot-post").dotdotdot({ellipsis  : '... ',});});});</script>
         {% endblock %}
 
       </div>
@@ -34,5 +33,5 @@
   </div>
 
 </div>
-
+<script>$(document).ajaxComplete(function(){$.getScript("{% static 'blog/js/jquery.dotdotdot.js' %}", function() {$(".dot-post").dotdotdot({ellipsis  : '... ',});});});</script>
 {% endblock %}
