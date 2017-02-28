@@ -65,3 +65,12 @@ class LikeForm(betterforms.BetterForm):
                 ('likes', {'fields': ['form_id', ], 'legend': 'likes'}),
                 ]
 
+class BlogFilterForm(betterforms.BetterForm):
+    name = forms.CharField(label="name", max_length=200, required = False)
+    country = forms.CharField(label="country", max_length=200, required = False)
+    city = forms.CharField(label="city", max_length=200, required = False)
+    class Meta:
+        fieldsets = [
+                ('likes', {'fields': ['name','country', 'city' ], 'legend': 'likes'}),
+                ]
+

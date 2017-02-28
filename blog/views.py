@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.core.urlresolvers import reverse
 from django.utils import timezone
 
+from django import forms
 from django.views.generic import View, DetailView, CreateView, DeleteView, TemplateView, FormView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import FormMixin
@@ -11,7 +12,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 
 from blog.models import UserProfile, Post, Comment, Like
 from django.contrib.auth.models import User
-from blog.forms import UserUpdateForm, PostForm, CommentForm, LikeForm
+from blog.forms import UserUpdateForm, PostForm, CommentForm, LikeForm, BlogFilterForm
 
 from el_pagination.views import AjaxListView
 
@@ -34,7 +35,8 @@ class UserProfile(LoginRequiredMixin, DetailView):
         context['title'] = "User Profile"
         return context
 
-class UserDisplay(DetailView):
+# Render User data
+class UserDisplay(LoginRequiredMixin, DetailView):
     model = User
     template_name = 'blog/update-profile.html'
 
@@ -43,7 +45,8 @@ class UserDisplay(DetailView):
         context['form'] = UserUpdateForm() 
         context['title'] = "Update Profile"
         return context
- 
+
+# Edit User data  
 class UserUpdateFormView(LoginRequiredMixin, SingleObjectMixin, FormView):
     form_class = UserUpdateForm
     success_url = '/'
@@ -79,7 +82,7 @@ class UserUpdateFormView(LoginRequiredMixin, SingleObjectMixin, FormView):
         return reverse("blog:profile", kwargs = {'pk': user.pk})
 
 # Update Profile
-class UserUpdate(View):
+class UserUpdate(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         view = UserDisplay.as_view()
@@ -101,9 +104,43 @@ class Blog(LoginRequiredMixin, AjaxListView):
     context_object_name = "posts"
     template_name = 'blog/blog.html'
     page_template = 'blog/post_list.html'
+    success_url = '/blog'
     
     def get_queryset(self):
-        return Post.objects.all()
+        queryset = Post.objects.all()
+        if self.request.method == 'POST':
+            form = BlogFilterForm(self.request.POST)
+            if form.is_valid():
+                name = form.cleaned_data['name']
+                country = form.cleaned_data['country']
+                city = form.cleaned_data['city']
+
+                # basic filter that search for the posts with the exact name
+                if name:
+                    queryset = queryset.filter(name=name)  
+
+                # basic filter that search for the posts created by users from 
+                # queried country 
+                if country:
+                    user = User.objects.filter(user_profile__country=country)
+                    queryset = queryset.filter(user=user) 
+
+                # basic filter that search for the posts created by users from 
+                # queried country 
+                if city:
+                    user = User.objects.filter(user_profile__city=city)
+                    queryset = queryset.filter(user=user) 
+        else:
+            queryset = queryset
+        return queryset 
+
+    def get_context_data(self, **kwargs):
+        context = super(Blog, self).get_context_data(**kwargs)
+        context['form'] = BlogFilterForm()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        return super(Blog, self).get(request, args, kwargs)
 
 #Create Post 
 class CreatePost(SuccessMessageMixin, LoginRequiredMixin, FormView):
@@ -196,7 +233,6 @@ class PostAndCommentList(LoginRequiredMixin, AjaxListView):
     def get_queryset(self, **kwargs):
         post = Post.objects.get(pk= self.kwargs['pk'])
         return Comment.objects.filter(article = post) 
-        return Comment.objects.all() 
     
 # Create Comment
 class CreateComment(SuccessMessageMixin, LoginRequiredMixin, SingleObjectMixin, FormView):
