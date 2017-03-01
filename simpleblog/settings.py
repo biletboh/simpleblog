@@ -12,7 +12,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '#-s&xl0!*$rs1tu%!3(xqm1k%7fyk-4e!bet5v@casbft*w)-('
 
 # SECURITY WARNING: don't run with debug turned on in production!
+
 DEBUG = True
+#DEBUG = False 
 
 ALLOWED_HOSTS = ['*']
 
@@ -99,9 +101,8 @@ DATABASES = {
     }
 
 
-if DEBUG is False:
-    db_from_env = dj_database_url.config(conn_max_age=500)
-    DATABASES['default'].update(db_from_env)
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
 
 
 
