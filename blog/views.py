@@ -146,7 +146,7 @@ class Blog(LoginRequiredMixin, AjaxListView):
 class CreatePost(SuccessMessageMixin, LoginRequiredMixin, FormView):
     form_class = PostForm 
     template_name = 'blog/create.html'
-    success_url = '/'
+    success_url = '/blog'
     login_url = '/accounts/login'
     success_message = "A post was created successfully"
     def form_valid(self, form):
