@@ -92,15 +92,15 @@ WSGI_APPLICATION = 'simpleblog.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
+# databse for the development
+#CURRDB = {'ENGINE': 'django.db.backends.sqlite3',
+#'NAME': os.path.join(BASE_DIR, 'db.sqlite3')}
 
-CURRDB = {'ENGINE': 'django.db.backends.sqlite3',
-'NAME': os.path.join(BASE_DIR, 'db.sqlite3')}
+#DATABASES = {
+#    'default': CURRDB
+#    }
 
-DATABASES = {
-    'default': CURRDB
-    }
-
-
+# database for heroku
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
 
