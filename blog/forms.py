@@ -17,8 +17,8 @@ from datetimewidget.widgets import DateWidget, DateTimeWidget
 from tinymce.widgets import TinyMCE
 
 class UserUpdateForm(FileFormMixin, betterforms.BetterForm):
-    username = forms.CharField(required=False) 
-    email = forms.EmailField(required=False)
+    username = forms.CharField(required=True) 
+    email = forms.EmailField(required=True)
     first_name = forms.CharField(required=False) 
     last_name = forms.CharField(required=False) 
     country = forms.CharField(required=False) 
@@ -32,7 +32,7 @@ class UserUpdateForm(FileFormMixin, betterforms.BetterForm):
     delete_url = forms.CharField(widget = forms.HiddenInput(), required = False)
 
     class Meta:
-        fieldsets = [('1', {'description': 'User Info', 'legend': 'main_info', 'fields': ['email', 'first_name', 'last_name'], }), 
+        fieldsets = [('1', {'description': 'User Info', 'legend': 'main_info', 'fields': ['username', 'email', 'first_name', 'last_name'], }), 
                 ('2', {'description': 'User Info', 'legend': 'user_profile', 'fields': ['country', 'city', 'birthday', 'avatar', 'form_id', 'upload_url', 'delete_url'], })]
 
 

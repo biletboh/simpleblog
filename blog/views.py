@@ -73,7 +73,7 @@ class UserUpdateFormView(LoginRequiredMixin, SingleObjectMixin, FormView):
         userprofile.country = country
         userprofile.city = city 
         userprofile.birthday = birthday 
-
+        userprofile.save()
         user.save()
         return super(UserUpdateFormView, self).form_valid(form)
 
